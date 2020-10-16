@@ -10,10 +10,8 @@ import os
 import time
 import json
 from datetime import datetime as dt
-import requests
 
 from html import unescape
-from tabulate import tabulate
 
 import discord
 

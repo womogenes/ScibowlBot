@@ -119,6 +119,7 @@ class MyClient(discord.Client):
         self.answered[cat] = True
         
         if correct:
+            await message.add_reaction("🧠")
             await self.channels[cat].send(f"""That was correct, **{message.author.display_name}**! 🙂""")
             
         else:
@@ -126,7 +127,8 @@ class MyClient(discord.Client):
                 rightAnswer = f"{self.answers[cat][0]}) {self.answers[cat][1]}"
             else:
                 rightAnswer = self.answers[cat][0]
-            await self.channels[cat].send(f"""Sorry, {message.author.display_name} ☹ The right answer was **{rightAnswer}**.""")
+            await message.add_reaction("😞")
+            await self.channels[cat].send(f"""Incorrect, {message.author.display_name} ☹ The right answer was **{rightAnswer}**.""")
         
         
     async def ping(self, message):

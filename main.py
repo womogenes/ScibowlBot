@@ -10,6 +10,7 @@ import os
 import time
 import json
 from datetime import datetime as dt
+import collections
 
 from html import unescape
 
@@ -21,15 +22,22 @@ signify = lambda x: "+" + str(x) if x > 0 else x
 
 class MyClient(discord.Client):
     
-    def initialize(self):        
-        self.question = None
-        self.answers = None
-        self.answered = True
-        self.lastSentQuestion = 0
+    async def initialize(self):
+        self.question = collections.defaultdict(dict)
+        self.qList = collections.defaultdict(list)
+        self.answers = collections.defaultdict(str)
+        self.answered = collections.defaultdict(lambda: True)
+        self.lastSentQuestion = collections.defaultdict(int)
         
-        self.bioChannel = self.get_channel(766681561977847809)
-        with open("./questions/biology.json") as fin:
-            self.bioQuestions = json.load(fin)
+        self.channels = {
+            "biology": await self.fetch_channel(766681561977847809),
+            "physics": await self.fetch_channel(658405319587790858),
+            "chemistry": await self.fetch_channel(658405808215687199),
+            "earth science": await self.fetch_channel(743648344584224798)
+        }
+        for c in self.channels:
+            with open(f"./questions/{c}.json") as fin:
+                self.qList[c] = json.load(fin)
         
         
     async def on_ready(self):
@@ -37,7 +45,7 @@ class MyClient(discord.Client):
         This function is called when the client is ready.
         """
         print("Logged on as " + str(self.user) + "!")
-        self.initialize()
+        await self.initialize()
         
     
     async def on_message(self, message):
@@ -52,59 +60,73 @@ class MyClient(discord.Client):
             
         # Do commands!
         if text.lower().strip() == "-q":
-            await self.send_bioq()
+            await self.send_question(message)
             return
             
-        if channel.id == 766681561977847809 and text.lower().startswith("-a"):
-            await self.answer_bioq(message)
+        if text.lower().startswith("-a"):
+            await self.answer_question(message)
             return
             
         await self.ping(message)
         
     
-    async def send_bioq(self):
-        if self.question == None or self.answered:                
-            self.question = f"**Biology question:**\n"
+    def cat_from_idx(self, idx):
+        for c in self.channels:
+            if self.channels[c].id == idx:
+                return c
+    
+    
+    async def send_question(self, message):
+        cat = self.cat_from_idx(message.channel.id)
+        if cat == None:
+            return
+        
+        if self.answered[cat]:
+            self.question[cat] = f"**{cat.capitalize()} question:**\n"
             
-            q = random.choice(self.bioQuestions)
-            self.question += q["tossup_question"]
+            q = random.choice(self.qList[cat])
+            self.question[cat] += q["tossup_question"]
                 
             if q["tossup_format"] == "Short Answer":
-                self.answers = [q["tossup_answer"]]
+                self.answers[cat] = [q["tossup_answer"]]
             else:
-                self.answers = [q["tossup_answer"][0], q["tossup_answer"][3:]]
+                self.answers[cat] = [q["tossup_answer"][0], q["tossup_answer"][3:]]
             
-            self.answered = False
+            self.answered[cat] = False
             
-            await self.bioChannel.send(self.question)
-            self.lastSentQuestion = time.time()
+            await self.channels[cat].send(self.question[cat])
+            self.lastSentQuestion[cat] = time.time()
             
             
-        elif not self.answered and time.time() - self.lastSentQuestion > 10:
-            await self.bioChannel.send(self.question)
+        elif not self.answered[cat] and time.time() - self.lastSentQuestion[cat] > 10:
+            await self.channels[cat].send(self.question[cat])
             
         
-    async def answer_bioq(self, message):    
-        if self.answered:
+    async def answer_question(self, message):
+        cat = self.cat_from_idx(message.channel.id)
+        if cat == None:
+            return
+            
+        if self.answered[cat]:
             return
             
         if len(message.content) < 4:
             return
         
         answer = message.content[3:]
-        correct = answer.lower() in [i.lower() for i in self.answers]
+        correct = answer.lower() in [i.lower() for i in self.answers[cat]]
             
-        self.answered = True
+        self.answered[cat] = True
         
         if correct:
-            await self.bioChannel.send(f"""That was correct, **{message.author.display_name}**! 🙂""")
+            await self.channels[cat].send(f"""That was correct, **{message.author.display_name}**! 🙂""")
             
         else:
-            if len(self.answers) == 2:
-                rightAnswer = f"{self.answers[0]}) {self.answers[1]}"
+            if len(self.answers[cat]) == 2:
+                rightAnswer = f"{self.answers[cat][0]}) {self.answers[cat][1]}"
             else:
-                rightAnswer = self.answers[0]
-            await self.bioChannel.send(f"""Sorry, {message.author.display_name} ☹ The right answer was **{rightAnswer}**.""")
+                rightAnswer = self.answers[cat][0]
+            await self.channels[cat].send(f"""Sorry, {message.author.display_name} ☹ The right answer was **{rightAnswer}**.""")
         
         
     async def ping(self, message):

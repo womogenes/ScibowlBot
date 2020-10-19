@@ -127,7 +127,7 @@ class MyClient(discord.Client):
                 rightAnswer = f"{self.answers[cat][0]}) {self.answers[cat][1]}"
             else:
                 rightAnswer = self.answers[cat][0]
-            await message.add_reaction("😞")
+            await message.add_reaction("☹️")
             await self.channels[cat].send(f"""Incorrect, {message.author.display_name} ☹ The right answer was **{rightAnswer}**.""")
         
         

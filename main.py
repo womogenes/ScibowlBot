@@ -22,7 +22,7 @@ signify = lambda x: "+" + str(x) if x > 0 else x
 
 class MyClient(discord.Client):
     
-    async def initialize(self):
+    def initialize(self):
         self.cpoints = 4
         self.wpoints = -1
         
@@ -32,12 +32,6 @@ class MyClient(discord.Client):
         self.answered = collections.defaultdict(lambda: True)
         self.lastSentQuestion = collections.defaultdict(int)
         
-        self.channels = {
-            "biology": await self.fetch_channel(766681561977847809),
-            "physics": await self.fetch_channel(767943535085092864),
-            "chemistry": await self.fetch_channel(767943402082926602),
-            "earth science": await self.fetch_channel(767943627397005343)
-        }
         for c in self.channels:
             with open(f"./questions/{c}.json") as fin:
                 self.qList[c] = json.load(fin)
@@ -45,6 +39,14 @@ class MyClient(discord.Client):
         with open("./data/point-info.json") as fin:
             self.points = json.load(fin)
         
+        
+    async def init2(self):
+        self.channels = {
+            "biology": await self.fetch_channel(766681561977847809),
+            "physics": await self.fetch_channel(767943535085092864),
+            "chemistry": await self.fetch_channel(767943402082926602),
+            "earth science": await self.fetch_channel(767943627397005343)
+        }
         
     
     def give_points(self, idx, points):
@@ -68,9 +70,8 @@ class MyClient(discord.Client):
         This function is called when the client is ready.
         """
         print("Logged on as " + str(self.user) + "!")
-        await self.initialize()
-        
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="@Bill9000, my creator"))
+        self.initialize()
+        await self.init2()
         
     
     async def on_message(self, message):

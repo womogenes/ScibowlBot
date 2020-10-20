@@ -73,8 +73,10 @@ class MyClient(discord.Client):
         self.initialize()
         await self.init2()
         
+        self.on_message = self._on_message
+        
     
-    async def on_message(self, message):
+    async def _on_message(self, message):
         clippedMessage = message.content if len(message.content) < 64 else message.content[:64]
         print(str(message.author).ljust(32) + "> " + clippedMessage + " " + str(dt.now()))
         

@@ -38,6 +38,28 @@ class MyClient(discord.Client):
         for c in self.channels:
             with open(f"./questions/{c}.json") as fin:
                 self.qList[c] = json.load(fin)
+                
+        with open("./data/point-info.json") as fin:
+            self.points = json.load(fin)
+            
+        self.cpoints = 4
+        self.wpoints = -1
+        
+    
+    def give_points(self, idx, points):
+        if idx not in self.points:
+            self.points[idx] = 0
+        self.points[idx] += points
+        with open("./data/point-info.json", "w") as fout:
+            json.dump(self.points, fout)
+        
+        
+    async def query_points(self, message):
+        idx = message.author.id
+        if idx not in self.points:
+            await message.channel.send(f"{message.author.display_name}, you don't have any points.")
+        else:
+            await message.channel.send(f"{message.author.display_name}, you have {self.points[idx]} points.")
         
         
     async def on_ready(self):
@@ -67,6 +89,10 @@ class MyClient(discord.Client):
             
         if text.lower().startswith("-a"):
             await self.answer_question(message)
+            return
+            
+        if text.lower().strip() == "points":
+            await self.query_points(message)
             return
             
         await self.ping(message)
@@ -122,7 +148,8 @@ class MyClient(discord.Client):
         
         if correct:
             await message.add_reaction("🧠")
-            await self.channels[cat].send(f"""That was correct, **{message.author.display_name}**! 🙂""")
+            self.give_points(message.author.id, self.cpoints)
+            await self.channels[cat].send(f"""That was correct, **{message.author.display_name}**! You now have **{self.points[message.author.id]}** points. (+{self.cpoints})""")
             
         else:
             if len(self.answers[cat]) == 2:
@@ -130,7 +157,8 @@ class MyClient(discord.Client):
             else:
                 rightAnswer = self.answers[cat][0]
             await message.add_reaction("☹️")
-            await self.channels[cat].send(f"""Incorrect, {message.author.display_name} ☹ The right answer was **{rightAnswer}**.""")
+            self.give_points(message.author.id, self.wpoints)
+            await self.channels[cat].send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{rightAnswer}**. You now have **{self.points[message.author.id]}** points. ({self.wpoints})""")
         
         
     async def ping(self, message):

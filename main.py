@@ -58,9 +58,9 @@ class MyClient(discord.Client):
     async def query_points(self, message):
         idx = message.author.id
         if idx not in self.points:
-            await message.channel.send(f"{message.author.display_name}, you don't have any points.")
+            await message.channel.send(f"**{message.author.display_name}**, you don't have any points.")
         else:
-            await message.channel.send(f"{message.author.display_name}, you have {self.points[idx]} points.")
+            await message.channel.send(f"**{message.author.display_name}, you have **{self.points[idx]}** points.")
         
         
     async def on_ready(self):
@@ -91,7 +91,7 @@ class MyClient(discord.Client):
             await self.answer_question(message)
             return
             
-        if text.lower().strip() == "points":
+        if text.lower().strip() == "-points":
             await self.query_points(message)
             return
             

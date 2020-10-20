@@ -23,6 +23,9 @@ signify = lambda x: "+" + str(x) if x > 0 else x
 class MyClient(discord.Client):
     
     async def initialize(self):
+        self.cpoints = 4
+        self.wpoints = -1
+        
         self.question = collections.defaultdict(dict)
         self.qList = collections.defaultdict(list)
         self.answers = collections.defaultdict(str)
@@ -41,9 +44,7 @@ class MyClient(discord.Client):
                 
         with open("./data/point-info.json") as fin:
             self.points = json.load(fin)
-            
-        self.cpoints = 4
-        self.wpoints = -1
+        
         
     
     def give_points(self, idx, points):

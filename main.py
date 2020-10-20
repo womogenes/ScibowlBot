@@ -31,9 +31,9 @@ class MyClient(discord.Client):
         
         self.channels = {
             "biology": await self.fetch_channel(766681561977847809),
-            "physics": await self.fetch_channel(658405319587790858),
-            "chemistry": await self.fetch_channel(658405808215687199),
-            "earth science": await self.fetch_channel(743648344584224798)
+            "physics": await self.fetch_channel(767943535085092864),
+            "chemistry": await self.fetch_channel(767943402082926602),
+            "earth science": await self.fetch_channel(767943627397005343)
         }
         for c in self.channels:
             with open(f"./questions/{c}.json") as fin:
@@ -46,6 +46,8 @@ class MyClient(discord.Client):
         """
         print("Logged on as " + str(self.user) + "!")
         await self.initialize()
+        
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="@Bill9000, my creator"))
         
     
     async def on_message(self, message):

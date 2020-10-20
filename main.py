@@ -23,7 +23,7 @@ signify = lambda x: "+" + str(x) if x > 0 else x
 class MyClient(discord.Client):
     
     async def initialize(self):
-        self.cpoints = 4
+        self.cpoints = 2
         self.wpoints = -1
         
         self.question = collections.defaultdict(dict)

@@ -76,7 +76,6 @@ class MyClient(discord.Client):
         clippedMessage = message.content if len(message.content) < 64 else message.content[:64]
         print(str(message.author).ljust(32) + "> " + clippedMessage + " " + str(dt.now()))
         
-        channel = message.channel
         text = message.content
         
         if message.author == self.user:
@@ -167,5 +166,8 @@ class MyClient(discord.Client):
 
 
 
+with open("./data/token.txt") as fin:
+    token = fin.read()
+
 client = MyClient()
-client.run('NzY1MjY0MjkzODE4MDA3NTg0.X4SR6Q.hzbbRcSXWY4xINOsKPUb5KbCAgk')
+client.run(token)

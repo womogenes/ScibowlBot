@@ -165,9 +165,11 @@ class MyClient(discord.Client):
             await message.channel.send("Active and ready to serve up some questions!")
 
 
-
-with open("./data/token.txt") as fin:
-    token = fin.read()
+if "token.txt" in os.listdir("./data"):
+    with open("./data/token.txt") as fin:
+        token = fin.read()
+else:
+    token = os.environ.get("TOKEN")
 
 client = MyClient()
 client.run(token)

@@ -13,8 +13,9 @@ from datetime import datetime as dt
 import collections
 
 from html import unescape
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
+if ".env" in os.listdir():
+    from dotenv import load_dotenv, find_dotenv
+    load_dotenv(find_dotenv())
 
 import discord
 

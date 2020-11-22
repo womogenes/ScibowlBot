@@ -2,3 +2,4 @@ questionGetter.py
 topicReorganizer.py
 .env
 data/token.txt
+.vscode/

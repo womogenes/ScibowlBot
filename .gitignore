@@ -3,3 +3,4 @@ topicReorganizer.py
 .env
 data/token.txt
 .vscode/
+**/__pycache__

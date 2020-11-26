@@ -3,8 +3,8 @@ from client.server_helper import ServerHelper
 
 
 async def _on_message(self, message):
-    if message.guild.id not in self.s:
-        self.s[message.guild.id] = ServerHelper()
+    if message.guild.id not in self.servers:
+        self.servers[message.guild.id] = ServerHelper()
     clipped_message = message.content if len(message.content) < 64 else message.content[:64]
     print(f"{str(message.author).ljust(32)}> {clipped_message} {datetime.now()}")
 

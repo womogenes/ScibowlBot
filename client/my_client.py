@@ -127,7 +127,7 @@ class MyClient(discord.Client):
             await message.channel.send("Please use `-q <category>` to get a question.")
             return
 
-        if cat == None:
+        if cat is None:
             return
 
         if self.s[idx].answered[cat]:

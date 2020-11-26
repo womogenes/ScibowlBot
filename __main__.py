@@ -1,8 +1,11 @@
-from client import MyClient
 import os
+from pathlib import Path
 
-if "token.txt" in os.listdir("./data"):
-    with open("./data/token.txt") as fin:
+from client import MyClient
+
+token_file = Path("data", "token.txt")
+if token_file.exists():
+    with open(token_file) as fin:
         token = fin.read()
 else:
     token = os.environ.get("TOKEN")

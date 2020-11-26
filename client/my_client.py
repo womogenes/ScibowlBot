@@ -4,7 +4,6 @@ import collections
 import json
 import os
 import random
-import sys
 import time
 
 import discord
@@ -14,7 +13,6 @@ from client.server_helper import ServerHelper
 if ".env" in os.listdir():
     from dotenv import find_dotenv, load_dotenv
     load_dotenv(find_dotenv())
-sys.path.append("./client")
 
 
 class MyClient(discord.Client):

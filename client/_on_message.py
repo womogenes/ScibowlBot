@@ -1,7 +1,5 @@
 from datetime import datetime as dt
-import sys
-sys.path.append("./client")
-import ServerHelper
+from client.server_helper import ServerHelper
 
 async def _on_message(self, message):
     if message.guild.id not in self.s:

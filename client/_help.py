@@ -2,7 +2,7 @@ import discord
 
 
 def create_help_embed(self):
-    if self.helpEmbed == None:
+    if self.helpEmbed is None:
         with open("./static/help.md") as fin:
             title = fin.readline()[1:].strip()
             description = ""

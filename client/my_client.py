@@ -108,11 +108,11 @@ class MyClient(discord.Client):
             self.s[idx].answered[cat] = False
 
             await message.channel.send(self.s[idx].question[cat])
-            self.s[idx].lastSentQuestion[cat] = time.time()
-            self.s[idx].channelToCat[message.channel.id] = cat
+            self.s[idx].last_sent_question[cat] = time.time()
+            self.s[idx].channel_to_cat[message.channel.id] = cat
 
         elif not self.s[idx].answered[cat]:
-            if time.time() - self.s[idx].lastSentQuestion[cat] > 10:
+            if time.time() - self.s[idx].last_sent_question[cat] > 10:
                 await message.channel.send(self.s[idx].question[cat])
 
     async def answer_question(self, message):
@@ -122,7 +122,7 @@ class MyClient(discord.Client):
             return
 
         idx = message.guild.id
-        cat = self.s[idx].channelToCat[message.channel.id]
+        cat = self.s[idx].channel_to_cat[message.channel.id]
         if cat not in self.categories:
             await message.channel.send("Please use `-q <category>` to get a question.")
             return
@@ -155,7 +155,7 @@ class MyClient(discord.Client):
             self.give_points(message.author.id, self.wpoints)
             await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.wpoints})""")
 
-        self.s[idx].channelToCat[cat] = ""
+        self.s[idx].channel_to_cat[cat] = ""
 
     async def ping(self, message):
         if message.content.strip() == "<@!765264293818007584>":

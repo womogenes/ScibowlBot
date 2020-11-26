@@ -6,5 +6,5 @@ class ServerHelper:
         self.question = collections.defaultdict(dict)
         self.answers = collections.defaultdict(str)
         self.answered = collections.defaultdict(lambda: True)
-        self.lastSentQuestion = collections.defaultdict(int)
-        self.channelToCat = collections.defaultdict(str)
+        self.last_sent_question = collections.defaultdict(int)
+        self.channel_to_cat = collections.defaultdict(str)

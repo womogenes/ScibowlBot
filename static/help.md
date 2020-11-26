@@ -3,7 +3,7 @@
 This is a list of commands you can use with the bot.
 Prefix: `<prefix>`
 
-`\help`
+`<prefix>help`
 Brings up this help text :)
 
 `<prefix>q <cat>`

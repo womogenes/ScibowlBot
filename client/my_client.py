@@ -29,7 +29,7 @@ class MyClient(discord.Client):
         self.prefix = "-"
         self.qList = collections.defaultdict(list)
 
-        self.helpEmbed = None
+        self.help_embed = None
 
         self.categories = {
             'astro': 'astronomy',
@@ -87,10 +87,8 @@ class MyClient(discord.Client):
         cat = x[1]
         idx = message.guild.id
         if cat not in self.categories:
-            text = "Category should be one of the following:\n```\n"
-            for i in self.categories:
-                text += i + "\n"
-            text = text[:-1] + "```"
+            category_text = "\n".join(self.categories)
+            text = f"Category should be one of the following:\n```{category_text}```"
             await message.channel.send(text)
             return
 

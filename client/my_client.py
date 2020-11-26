@@ -1,29 +1,21 @@
 # TODO: Replace channel IDs.
 
-import discord
-from discord.ext import commands
-from discord.utils import get
-
+import collections
+import json
+import os
 import random
 import sys
-sys.path.append("./client")
-import os
 import time
-import json
-from datetime import datetime as dt
-import collections
-from ServerHelper import *
-
-from html import unescape
-if ".env" in os.listdir():
-    from dotenv import load_dotenv, find_dotenv
-    load_dotenv(find_dotenv())
 
 import discord
 
-ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-shorten = lambda x: x if len(x) < 16 else x[:13] + "..."
-signify = lambda x: "+" + str(x) if x > 0 else x
+from client.server_helper import ServerHelper
+
+if ".env" in os.listdir():
+    from dotenv import find_dotenv, load_dotenv
+    load_dotenv(find_dotenv())
+sys.path.append("./client")
+
 
 class MyClient(discord.Client):
 
@@ -61,7 +53,6 @@ class MyClient(discord.Client):
         with open("./data/point-info.json") as fin:
             self.points = json.load(fin)
 
-
     def give_points(self, idx, points):
         if idx not in self.points:
             self.points[idx] = 0
@@ -69,14 +60,12 @@ class MyClient(discord.Client):
         with open("./data/point-info.json", "w") as fout:
             json.dump(self.points, fout)
 
-
     async def query_points(self, message):
         idx = message.author.id
         if idx not in self.points:
             await message.channel.send(f"**{message.author.display_name}**, you don't have any points.")
         else:
             await message.channel.send(f"**{message.author.display_name}, you have **{self.points[idx]}** points.")
-
 
     async def on_ready(self):
         """
@@ -90,7 +79,6 @@ class MyClient(discord.Client):
         for g in self.guilds:
             idx = g.id
             self.s[idx] = ServerHelper()
-
 
     async def send_question(self, message):
         x = message.content.strip().split(" ")
@@ -128,7 +116,6 @@ class MyClient(discord.Client):
         elif not self.s[idx].answered[cat]:
             if time.time() - self.s[idx].lastSentQuestion[cat] > 10:
                 await message.channel.send(self.s[idx].question[cat])
-
 
     async def answer_question(self, message):
         x = message.content.strip().split(" ")
@@ -170,10 +157,8 @@ class MyClient(discord.Client):
             self.give_points(message.author.id, self.wpoints)
             await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.wpoints})""")
 
-
         self.s[idx].channelToCat[cat] = ""
 
-        
     async def ping(self, message):
         if message.content.strip() == "<@!765264293818007584>":
             await message.channel.send("Active and ready to serve up some questions!")

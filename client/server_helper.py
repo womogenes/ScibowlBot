@@ -1,5 +1,6 @@
 import collections
 
+
 class ServerHelper:
     def __init__(self):
         self.question = collections.defaultdict(dict)

@@ -115,7 +115,7 @@ class MyClient(discord.Client):
 
     async def answer_question(self, message):
         x = message.content.strip().split(" ")
-        if len(x) != 2:
+        if len(x) < 2:
             await message.channel.send("Please use the format `-a <answer>`.")
             return
 

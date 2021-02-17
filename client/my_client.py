@@ -91,27 +91,33 @@ class MyClient(discord.Client):
             text = f"Category should be one of the following:\n```{category_text}```"
             await message.channel.send(text)
             return
+        
+        try:
+            if self.servers[idx].answered[cat]:
+                self.servers[idx].question[cat] = f"**{cat.capitalize()} question:**\n"
 
-        if self.servers[idx].answered[cat]:
-            self.servers[idx].question[cat] = f"**{cat.capitalize()} question:**\n"
+                q = random.choice(self.question_list[cat])
+                self.servers[idx].question[cat] += q["tossup_question"]
 
-            q = random.choice(self.question_list[cat])
-            self.servers[idx].question[cat] += q["tossup_question"]
+                if q["tossup_format"] == "Short Answer":
+                    self.servers[idx].answers[cat] = [q["tossup_answer"]]
+                else:
+                    self.servers[idx].answers[cat] = [q["tossup_answer"][0], q["tossup_answer"][3:]]
 
-            if q["tossup_format"] == "Short Answer":
-                self.servers[idx].answers[cat] = [q["tossup_answer"]]
-            else:
-                self.servers[idx].answers[cat] = [q["tossup_answer"][0], q["tossup_answer"][3:]]
-
-            self.servers[idx].answered[cat] = False
-
-            await message.channel.send(self.servers[idx].question[cat])
-            self.servers[idx].last_sent_question[cat] = time.time()
-            self.servers[idx].channel_to_cat[message.channel.id] = cat
-
-        elif not self.servers[idx].answered[cat]:
-            if time.time() - self.servers[idx].last_sent_question[cat] > 10:
                 await message.channel.send(self.servers[idx].question[cat])
+                self.servers[idx].last_sent_question[cat] = time.time()
+                self.servers[idx].channel_to_cat[message.channel.id] = cat
+                self.servers[idx].answered[cat] = False
+
+                
+            elif not self.servers[idx].answered[cat]:
+                if time.time() - self.servers[idx].last_sent_question[cat] > 10:
+                    await message.channel.send(self.servers[idx].question[cat])
+
+        except:
+            pass
+
+
 
     async def answer_question(self, message):
         x = message.content.strip().split(" ")

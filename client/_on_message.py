@@ -7,7 +7,7 @@ async def _on_message(self, message):
         self.servers[message.guild.id] = ServerHelper()
     clipped_message = message.content if len(message.content) < 64 else message.content[:64]
     print(f"{str(message.author).ljust(32)}> {clipped_message} {datetime.now()}")
-
+    
     if message.author == self.user:
         return
 
@@ -27,6 +27,13 @@ async def _on_message(self, message):
 
         elif text == "help":
             await self.send_help_text(message)
+        
+        elif text == "hello":
+            await message.channel.send('Hello!')
+            
+        elif text == "ping":
+            await message.channel.send("Pong! 🏓")
 
     else:
         await self.ping(message)
+

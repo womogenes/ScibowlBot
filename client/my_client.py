@@ -8,12 +8,14 @@ import time
 
 import discord
 
+from ._override import on_raw_reaction_add
+self.on_raw_reaction_add = on_raw_reaction_add
+
 from client.server_helper import ServerHelper
 
 if ".env" in os.listdir():
     from dotenv import find_dotenv, load_dotenv
     load_dotenv(find_dotenv())
-
 
 class MyClient(discord.Client):
 
@@ -26,7 +28,7 @@ class MyClient(discord.Client):
         self.correct_points = 2
         self.incorrect_points = -1
 
-        self.prefix = "-"
+        self.prefix = "*"
         self.question_list = collections.defaultdict(list)
 
         self.help_embed = None
@@ -41,8 +43,9 @@ class MyClient(discord.Client):
             'energy': 'energy',
             'gen': 'general science',
             'math': 'math',
-            'phy': 'physics'
+            'phys': 'physics'
         }
+        
 
         for c in self.categories:
             with open(f"./questions/{self.categories[c]}.json") as fin:
@@ -71,7 +74,7 @@ class MyClient(discord.Client):
         """
         print("Logged on as " + str(self.user) + "!")
         self.on_message = self._on_message
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f"{self.prefix}help"))
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{self.prefix}help"))
 
         self.servers = {
             guild.id: ServerHelper()
@@ -117,8 +120,6 @@ class MyClient(discord.Client):
         except:
             pass
 
-
-
     async def answer_question(self, message):
         x = message.content.strip().split(" ")
         if len(x) < 2:
@@ -146,7 +147,7 @@ class MyClient(discord.Client):
         self.servers[idx].answered[cat] = True
 
         if correct:
-            await message.add_reaction("🧠")
+            await message.add_reaction("✅")
             self.give_points(message.author.id, self.correct_points)
             await message.channel.send(f"""That was correct, **{message.author.display_name}**! You now have **{self.points[message.author.id]}** points. (+{self.correct_points})""")
 
@@ -157,10 +158,21 @@ class MyClient(discord.Client):
                 right_answer = self.servers[idx].answers[cat][0]
             await message.add_reaction("☹️")
             self.give_points(message.author.id, self.incorrect_points)
-            await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.incorrect_points})""")
+            await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.incorrect_points}).""")
+            await message.add_reaction("❓")
+            if reaction.emoji == '❓':
+                await message.channel.send("testing")
 
+                            
+
+            
+            
         self.servers[idx].channel_to_cat[cat] = ""
 
     async def ping(self, message):
         if message.content.strip() == "<@!765264293818007584>":
             await message.channel.send("Active and ready to serve up some questions!")
+        if message.content.strip() == "alr":
+            await message.channel.send("Alr")
+            
+

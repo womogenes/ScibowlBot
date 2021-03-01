@@ -26,7 +26,7 @@ class MyClient(discord.Client):
         self.correct_points = 2
         self.incorrect_points = -1
 
-        self.prefix = "*"
+        self.prefix = "-"
         self.question_list = collections.defaultdict(list)
 
         self.help_embed = None
@@ -41,7 +41,7 @@ class MyClient(discord.Client):
             'energy': 'energy',
             'gen': 'general science',
             'math': 'math',
-            'phys': 'physics'
+            'phy': 'physics'
         }
         
 

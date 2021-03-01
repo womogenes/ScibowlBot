@@ -160,8 +160,7 @@ class MyClient(discord.Client):
             self.give_points(message.author.id, self.incorrect_points)
             await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.incorrect_points}).""")
             await message.add_reaction("❓")
-            if reaction.emoji == '❓':
-                await message.channel.send("testing")
+
 
                             
 
@@ -172,7 +171,6 @@ class MyClient(discord.Client):
     async def ping(self, message):
         if message.content.strip() == "<@!765264293818007584>":
             await message.channel.send("Active and ready to serve up some questions!")
-        if message.content.strip() == "alr":
-            await message.channel.send("Alr")
+
             
 

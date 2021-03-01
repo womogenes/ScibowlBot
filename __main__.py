@@ -11,4 +11,4 @@ else:
     token = os.environ.get("TOKEN")
 
 client = MyClient()
-client.run("ODE0OTgxOTgzMzY4NTExNTUx.YDlxHg.dnkx83IU1LMxmACLbxd1mf1VeTA")
+client.run("TOKEN")

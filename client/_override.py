@@ -2,7 +2,7 @@ import discord
 
 async def on_raw_reaction_add(self, payload):
     # Here's the info
-    print(f"""channel: {payload.channel}
+    print(f"""channel: {payload.channel_id}
 emoji: {payload.emoji}
 message_id: {payload.message_id}
 user: {payload.user_id}

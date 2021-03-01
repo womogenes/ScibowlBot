@@ -8,9 +8,6 @@ import time
 
 import discord
 
-from ._override import on_raw_reaction_add
-self.on_raw_reaction_add = on_raw_reaction_add
-
 from client.server_helper import ServerHelper
 
 if ".env" in os.listdir():
@@ -21,6 +18,7 @@ class MyClient(discord.Client):
 
     from ._help import send_help_text
     from ._on_message import _on_message
+    from ._override import on_raw_reaction_add
 
     def __init__(self, *args):
         discord.Client.__init__(self, *args)

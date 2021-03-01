@@ -4,3 +4,4 @@ topicReorganizer.py
 data/token.txt
 .vscode/
 **/__pycache__/
+.DS_Store

@@ -1,7 +1,7 @@
 questionGetter.py
 topicReorganizer.py
 .env
-data/token.txt
+data/point-info.json
 .vscode/
 **/__pycache__/
 .DS_Store

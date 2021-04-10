@@ -14,11 +14,11 @@ if ".env" in os.listdir():
     from dotenv import find_dotenv, load_dotenv
     load_dotenv(find_dotenv())
 
+
 class MyClient(discord.Client):
 
     from ._help import send_help_text
     from ._on_message import _on_message
-    from ._override import on_raw_reaction_add
 
     def __init__(self, *args):
         discord.Client.__init__(self, *args)
@@ -43,7 +43,6 @@ class MyClient(discord.Client):
             'math': 'math',
             'phy': 'physics'
         }
-        
 
         for c in self.categories:
             with open(f"./questions/{self.categories[c]}.json") as fin:
@@ -72,7 +71,7 @@ class MyClient(discord.Client):
         """
         print("Logged on as " + str(self.user) + "!")
         self.on_message = self._on_message
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{self.prefix}help"))
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f"{self.prefix}help"))
 
         self.servers = {
             guild.id: ServerHelper()
@@ -81,19 +80,27 @@ class MyClient(discord.Client):
 
     async def send_question(self, message):
         x = message.content.strip().split(" ")
+
         if len(x) != 2:
             await message.channel.send("Please use the format `-q <category>`.")
             return
 
         cat = x[1]
-        idx = message.guild.id
+        idx = message.guild.id if message.guild else message.author.id
+
+        activeCat = self.servers[idx].channel_to_cat[message.channel.id]
+        if activeCat not in ["", cat]:
+            text = f"There is an active **{activeCat}** question in this channel. Please answer it, then ask a new question."
+            await message.channel.send(text)
+            return
+
         if cat not in self.categories:
             category_text = "\n".join(self.categories)
             text = f"Category should be one of the following:\n```{category_text}```"
             await message.channel.send(text)
             return
         
-        if self.servers[idx].answered[cat]:
+        if self.servers[idx].channel_to_cat[message.channel.id] == "":
             self.servers[idx].question[cat] = f"**{cat.capitalize()} question:**\n"
 
             q = random.choice(self.question_list[cat])
@@ -107,10 +114,8 @@ class MyClient(discord.Client):
             await message.channel.send(self.servers[idx].question[cat])
             self.servers[idx].last_sent_question[cat] = time.time()
             self.servers[idx].channel_to_cat[message.channel.id] = cat
-            self.servers[idx].answered[cat] = False
-
             
-        elif not self.servers[idx].answered[cat]:
+        else:
             if time.time() - self.servers[idx].last_sent_question[cat] > 10:
                 await message.channel.send(self.servers[idx].question[cat])
 
@@ -121,16 +126,17 @@ class MyClient(discord.Client):
             await message.channel.send("Please use the format `-a <answer>`.")
             return
 
-        idx = message.guild.id
+        idx = message.guild.id if message.guild else message.author.id
         cat = self.servers[idx].channel_to_cat[message.channel.id]
-        if cat not in self.categories:
+
+        print("asdfasdfasdf", idx)
+        print(self.servers[idx].channel_to_cat)
+
+        if cat == "":
             await message.channel.send("No current question. Please use `-q <category>` to get a question.")
             return
 
         if cat is None:
-            return
-
-        if self.servers[idx].answered[cat]:
             return
 
         if len(message.content) < 4:
@@ -139,10 +145,8 @@ class MyClient(discord.Client):
         answer = message.content[3:]
         correct = answer.lower() in [i.lower() for i in self.servers[idx].answers[cat]]
 
-        self.servers[idx].answered[cat] = True
-
         if correct:
-            await message.add_reaction("✅")
+            await message.add_reaction("🧠")
             self.give_points(message.author.id, self.correct_points)
             await message.channel.send(f"""That was correct, **{message.author.display_name}**! You now have **{self.points[message.author.id]}** points. (+{self.correct_points})""")
 
@@ -153,19 +157,10 @@ class MyClient(discord.Client):
                 right_answer = self.servers[idx].answers[cat][0]
             await message.add_reaction("☹️")
             self.give_points(message.author.id, self.incorrect_points)
-            await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.incorrect_points}).""")
-            await message.add_reaction("❓")
+            await message.channel.send(f"""Incorrect, **{message.author.display_name}**. The right answer was **{right_answer}**. You now have **{self.points[message.author.id]}** points. ({self.incorrect_points})""")
 
-
-                            
-
-            
-            
-        self.servers[idx].channel_to_cat[cat] = ""
+        self.servers[idx].channel_to_cat[message.channel.id] = ""
 
     async def ping(self, message):
         if message.content.strip() == "<@!765264293818007584>":
             await message.channel.send("Active and ready to serve up some questions!")
-
-            
-

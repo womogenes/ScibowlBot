@@ -114,10 +114,6 @@ class MyClient(discord.Client):
             await message.channel.send(self.servers[idx].question[cat])
             self.servers[idx].last_sent_question[cat] = time.time()
             self.servers[idx].channel_to_cat[message.channel.id] = cat
-<<<<<<< HEAD
-=======
-
->>>>>>> 4296d00 (Fix more bugs)
             
         else:
             if time.time() - self.servers[idx].last_sent_question[cat] > 10:
@@ -132,13 +128,6 @@ class MyClient(discord.Client):
 
         idx = message.guild.id if message.guild else message.author.id
         cat = self.servers[idx].channel_to_cat[message.channel.id]
-<<<<<<< HEAD
-
-        print("asdfasdfasdf", idx)
-        print(self.servers[idx].channel_to_cat)
-
-=======
->>>>>>> 4296d00 (Fix more bugs)
         if cat == "":
             await message.channel.send("No current question. Please use `-q <category>` to get a question.")
             return
